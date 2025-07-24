@@ -112,4 +112,32 @@ document.addEventListener('DOMContentLoaded', () => {
             memoryMapContainer.appendChild(blockDiv);
         });
     }
+
+    function displayCalculation(source, offset, finalAddress, isValid) {
+        const addressColor = isValid ? 'text-success' : 'text-error';
+        calculationContent.innerHTML = `
+                    <p>Cálculo do Endereço Físico a partir do <strong class="text-accent">${source.name}</strong>:</p>
+                    <div class="bg-primary p-4 rounded-lg my-2 font-mono text-center text-xl">
+                        <span>${toHex(source.base, 4)}h</span>
+                        <span class="text-secondary mx-2">(Base Origem)</span>
+                        <span class="text-yellow-400 mx-1">* 10h</span>
+                        <span class="text-secondary mx-1">+</span>
+                        <span>${toHex(offset, 4)}h</span>
+                        <span class="text-secondary mx-2">(Offset)</span>
+                        <span class="text-secondary mx-1">=</span>
+                        <strong class="${addressColor}">${toHex(finalAddress, 5)}h</strong>
+                    </div>
+                    <p>Verificando se o endereço está nos limites do <strong class="text-accent">${source.name}</strong> (Origem):</p>
+                     <div class="bg-primary p-4 rounded-lg my-2 font-mono text-center text-lg">
+                        <span class="text-secondary">Intervalo Válido: </span>
+                        <span class="text-blue-400">${toHex(source.start, 5)}h</span>
+                        <span class="text-secondary"> até </span>
+                        <span class="text-blue-400">${toHex(source.end, 5)}h</span>
+                    </div>
+                `;
+    }
+
+    function toHex(num, padding = 4) {
+        return num.toString(16).toUpperCase().padStart(padding, '0');
+    }
 });
