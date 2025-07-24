@@ -137,6 +137,77 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
     }
 
+    function displaySummary(source, target, finalAddress, isValid) {
+        if (isValid) {
+            summaryTitle.textContent = "3. Conclusão: ACESSO BEM-SUCEDIDO";
+            summaryTitle.className = "text-xl font-bold mb-4 text-success";
+            summaryContent.innerHTML = `
+                        <p>
+                            O endereço físico <strong class="font-mono text-success">${toHex(finalAddress, 5)}h</strong> está <strong class="text-success">DENTRO</strong> dos limites permitidos para o segmento de origem, o <strong class="text-accent">${source.name}</strong>.
+                        </p>
+                        <p class="mt-4 font-bold">
+                            Nenhuma falha de proteção é gerada. A operação de memória seria concluída com sucesso.
+                        </p>
+                    `;
+        } else {
+            summaryTitle.textContent = "3. Conclusão: FALHA DE PROTEÇÃO GERAL (GPF)";
+            summaryTitle.className = "text-xl font-bold mb-4 text-error";
+
+            let actualSegmentKey = null;
+            const displayOrder = ['CS', 'SS', 'DS', 'ES'];
+            for (const key of displayOrder) {
+                if (finalAddress >= segments[key].start && finalAddress <= segments[key].end) {
+                    actualSegmentKey = key;
+                    break;
+                }
+            }
+
+            let locationExplanation = '';
+            if (actualSegmentKey) {
+                const actualSegment = segments[actualSegmentKey];
+                if (actualSegment.name === target.name) {
+                    locationExplanation = `
+                                <div class="mt-3 p-3 bg-green-900/50 border border-green-700 rounded-lg flex items-center">
+                                    <svg class="w-6 h-6 text-green-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    <div>
+                                        Apesar da falha, o endereço caiu no segmento que você previu: <strong class="text-accent">${actualSegment.name}</strong>. A operação ainda é ilegal porque o acesso se originou fora dos limites do <strong class="text-accent">${source.name}</strong>.
+                                    </div>
+                                </div>
+                             `;
+                } else {
+                    locationExplanation = `
+                                <div class="mt-3 p-3 bg-yellow-900/50 border border-yellow-700 rounded-lg flex items-center">
+                                    <svg class="w-6 h-6 text-yellow-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                    <div>
+                                        O endereço aponta para a área de memória do <strong class="text-accent">${actualSegment.name}</strong>, mas o alvo que você escolheu era o <strong class="text-accent">${target.name}</strong>.
+                                    </div>
+                                </div>
+                             `;
+                }
+            } else {
+                locationExplanation = `
+                            <div class="mt-3 p-3 bg-tertiary/50 border border-color rounded-lg flex items-center">
+                                 <svg class="w-6 h-6 text-secondary mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+                                <div>
+                                    O endereço aponta para uma <strong class="text-secondary">área de memória não alocada</strong> entre os segmentos.
+                                </div>
+                            </div>
+                        `;
+            }
+
+            summaryContent.innerHTML = `
+                        <p>
+                            A falha ocorreu porque o acesso, partindo do <strong class="text-accent">${source.name}</strong>, ultrapassou os limites do próprio segmento.
+                            O endereço físico resultante é <strong class="font-mono text-error">${toHex(finalAddress, 5)}h</strong>.
+                        </p>
+                        ${locationExplanation}
+                        <p class="mt-4 font-bold">
+                            A Unidade de Gerenciamento de Memória (MMU) deteta a violação e dispara uma exceção de hardware.
+                        </p>
+                    `;
+        }
+    }
+
     function toHex(num, padding = 4) {
         return num.toString(16).toUpperCase().padStart(padding, '0');
     }
