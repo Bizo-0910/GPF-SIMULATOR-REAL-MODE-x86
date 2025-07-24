@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // ReferÃªncias aos elementos da UI
+    // Referências aos elementos da UI
     const themeToggle = document.getElementById('theme-toggle');
     const sunIcon = document.getElementById('theme-icon-sun');
     const moonIcon = document.getElementById('theme-icon-moon');
