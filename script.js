@@ -211,4 +211,16 @@ document.addEventListener('DOMContentLoaded', () => {
     function toHex(num, padding = 4) {
         return num.toString(16).toUpperCase().padStart(padding, '0');
     }
+
+    function showError(message) {
+        errorMessage.textContent = message;
+    }
+
+    function resetUI() {
+        errorMessage.textContent = '';
+        resultsPanel.style.display = 'none';
+        document.querySelectorAll('.result-card').forEach(card => {
+            card.classList.remove('visible');
+        });
+    }
 });
