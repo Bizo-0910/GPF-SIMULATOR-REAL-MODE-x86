@@ -19,12 +19,95 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorMessage = document.getElementById('error_message');
     const memoryMapContainer = document.getElementById('memory_map_container');
 
+    let segments = {};
+
     // Lógica do Tema
     themeToggle.addEventListener('click', () => {
         document.documentElement.classList.toggle('light');
         sunIcon.classList.toggle('hidden');
         moonIcon.classList.toggle('hidden');
     });
+
+    simulateBtn.addEventListener('click', runSimulation);
+
+    function runSimulation() {
+        resetUI();
+
+        // 1. Obter e validar todas as entradas do usuário
+        const baseInputs = {
+            CS: csBaseInput.value.trim(),
+            SS: ssBaseInput.value.trim(),
+            DS: dsBaseInput.value.trim(),
+            ES: esBaseInput.value.trim(),
+        };
+        const offsetHex = accessOffsetInput.value.trim();
+        const bases = {};
+
+        for (const seg of ['CS', 'SS', 'DS', 'ES']) {
+            if (!/^[0-9a-fA-F]+$/.test(baseInputs[seg])) {
+                showError(`O valor da base para o segmento ${seg} deve ser um número hexadecimal válido.`);
+                return;
+            }
+            bases[seg] = parseInt(baseInputs[seg], 16);
+            if (bases[seg] > 0xFFFF) {
+                showError(`A base do segmento ${seg} no modo real é de 16 bits (valor máx: FFFF).`);
+                return;
+            }
+        }
+
+        if (!/^[0-9a-fA-F]+$/.test(offsetHex)) {
+            showError("O valor de Offset deve ser um número hexadecimal válido.");
+            return;
+        }
+        const offset = parseInt(offsetHex, 16);
+        if (offset > 0xFFFF) {
+            showError("O offset no modo real é de 16 bits (valor máx: FFFF).");
+            return;
+        }
+
+        // 2. Validação da ordem das bases dos segmentos
+        if (!(bases.CS < bases.SS && bases.SS < bases.DS && bases.DS < bases.ES)) {
+            showError("Erro de configuração: As bases devem seguir a ordem crescente (CS < SS < DS < ES).");
+            return;
+        }
+
+        // 3. Construir o objeto de segmentos e calcular endereços físicos
+        segments = {
+            CS: { base: bases.CS, name: "Código (CS)", color: "bg-blue-800/50" },
+            SS: { base: bases.SS, name: "Pilha (SS)", color: "bg-red-800/50" },
+            DS: { base: bases.DS, name: "Dados (DS)", color: "bg-green-800/50" },
+            ES: { base: bases.ES, name: "Extra (ES)", color: "bg-purple-800/50" }
+        };
+
+        Object.values(segments).forEach(seg => { seg.start = seg.base * 0x10; });
+
+        segments.CS.end = segments.SS.start - 1;
+        segments.SS.end = segments.DS.start - 1;
+        segments.DS.end = segments.ES.start - 1;
+        segments.ES.end = segments.ES.start + 0xFFFF;
+
+        // 4. Preparar o cenário da verificação
+        const sourceKey = sourceSegmentSelect.value;
+        const targetKey = targetSegmentSelect.value;
+        const sourceSegment = segments[sourceKey];
+        const targetSegment = segments[targetKey];
+        const finalAddress = sourceSegment.start + offset;
+
+        // 5. Exibir os detalhes dos segmentos
+        displaySegmentDetails(segments);
+        displayMemoryMap(segments);
+
+        // 6. A GPF ocorre se o acesso ultrapassar os limites do PRÓPRIO SEGMENTO DE ORIGEM.
+        const isAccessValid = finalAddress >= sourceSegment.start && finalAddress <= sourceSegment.end;
+
+        displayCalculation(sourceSegment, offset, finalAddress, isAccessValid);
+        displaySummary(sourceSegment, targetSegment, finalAddress, isAccessValid);
+
+        resultsPanel.style.display = 'block';
+        setTimeout(() => {
+            document.querySelectorAll('.result-card').forEach(card => card.classList.add('visible'));
+        }, 50);
+    }
 
     function displaySegmentDetails(segments) {
         segmentTableBody.innerHTML = '';
