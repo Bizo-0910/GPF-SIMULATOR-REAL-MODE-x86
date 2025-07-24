@@ -12,5 +12,43 @@
     <style src="style.css"></style>
     <script src="script.js" defer></script>
 </head>
-<body></body>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="container mx-auto max-w-7xl">
+        <header class="text-center mb-8 relative">
+            <h1 class="text-3xl md:text-4xl font-bold text-accent">Simulador de GPF (General Protection Fault)</h1>
+            <p class="text-lg text-secondary mt-2">Arquitetura x86 - Modo Real</p>
+            <button id="theme-toggle" class="absolute top-0 right-0 p-2 rounded-full text-secondary hover:bg-tertiary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent" title="Alternar tema">
+                <svg id="theme-icon-sun" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m8.66-15.66l-.7.7M4.04 19.96l-.7.7M21 12h-1M4 12H3m15.66 8.66l-.7-.7M4.04 4.04l-.7-.7M12 18a6 6 0 100-12 6 6 0 000 12z" /></svg>
+                <svg id="theme-icon-moon" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+            </button>
+        </header>
+
+        <!-- Painel de Configuração -->
+        <div class="bg-secondary p-6 rounded-xl shadow-2xl border border-color mb-8">
+            <h2 class="text-xl font-bold mb-4 border-b border-color pb-2">Configuração da Simulação</h2>
+            
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-3 text-secondary">Bases dos Segmentos (Hex)</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                        <label for="cs_base_input" class="block text-sm font-medium text-secondary mb-1">CS (Código)</label>
+                        <input type="text" id="cs_base_input" value="2000" class="font-mono w-full bg-primary border border-color rounded-md p-2 text-primary placeholder-secondary focus:ring-2 focus:ring-accent">
+                    </div>
+                    <div>
+                        <label for="ss_base_input" class="block text-sm font-medium text-secondary mb-1">SS (Pilha)</label>
+                        <input type="text" id="ss_base_input" value="3000" class="font-mono w-full bg-primary border border-color rounded-md p-2 text-primary placeholder-secondary focus:ring-2 focus:ring-accent">
+                    </div>
+                    <div>
+                        <label for="ds_base_input" class="block text-sm font-medium text-secondary mb-1">DS (Dados)</label>
+                        <input type="text" id="ds_base_input" value="4000" class="font-mono w-full bg-primary border border-color rounded-md p-2 text-primary placeholder-secondary focus:ring-2 focus:ring-accent">
+                    </div>
+                    <div>
+                        <label for="es_base_input" class="block text-sm font-medium text-secondary mb-1">ES (Extra)</label>
+                        <input type="text" id="es_base_input" value="5000" class="font-mono w-full bg-primary border border-color rounded-md p-2 text-primary placeholder-secondary focus:ring-2 focus:ring-accent">
+                    </div>
+                </div>
+            </div>
+    </div>
+</body>
 </html>
