@@ -49,6 +49,37 @@
                     </div>
                 </div>
             </div>
+        
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 border-t border-color pt-6">
+                <div>
+                    <label for="source_segment" class="block text-sm font-medium text-secondary mb-1">Segmento de Origem</label>
+                    <select id="source_segment" class="w-full bg-primary border border-color rounded-md p-2 text-primary focus:ring-2 focus:ring-accent">
+                        <option value="CS">CS (Código)</option>
+                        <option value="SS">SS (Pilha)</option>
+                        <option value="DS">DS (Dados)</option>
+                        <option value="ES">ES (Extra)</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="access_offset" class="block text-sm font-medium text-secondary mb-1">Offset de Acesso (Hex)</label>
+                    <input type="text" id="access_offset" value="FFFF" class="font-mono w-full bg-primary border border-color rounded-md p-2 text-primary placeholder-secondary focus:ring-2 focus:ring-accent">
+                </div>
+                <div>
+                    <label for="target_segment" class="block text-sm font-medium text-secondary mb-1">Segmento Alvo (Intenção)</label>
+                    <select id="target_segment" class="w-full bg-primary border border-color rounded-md p-2 text-primary focus:ring-2 focus:ring-accent">
+                        <option value="DS">DS (Dados)</option>
+                        <option value="CS">CS (Código)</option>
+                        <option value="SS">SS (Pilha)</option>
+                        <option value="ES">ES (Extra)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <button id="simulate_btn" class="bg-accent hover:bg-accent-hover text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+                    Verificar Acesso
+                </button>
+            </div>
+        </div>
     </div>
 </body>
 </html>
